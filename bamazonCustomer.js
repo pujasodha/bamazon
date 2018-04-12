@@ -47,13 +47,13 @@ function start() {
                     }
                 }
             ])
-            .then (function (answer) {
-                var toBuy = (answer.id) -1
+            .then(function (answer) {
+                var toBuy = (answer.id) - 1
                 var howMany = (parseInt(answer.stock_quantity))
                 var total = parseFloat(((res[toBuy].price) * howMany).toFixed(2))
 
                 if (res[toBuy].stock_quantity >= howMany) {
-                    connection.query('UPDATE products SET stock_quantity = stock_quantity -' + howMany +  'WHERE id =' + toBuy, [{
+                    connection.query('UPDATE products SET stock_quantity = stock_quantity -' + howMany + 'WHERE id = ' + toBuy +";", [{
                                 stock_quantity: (res[toBuy].stock_quantity - toBuy)
                             },
                             {
@@ -71,36 +71,39 @@ function start() {
                                 index = 1
                             }
                         }
-                        connection.query("UPDATE stock_quantity SET ? WHERE ?", [{
-                                    totalSales: stockRes[i].totalSales - total
-                                },
-                                {
-                                    stock_quantity: res[toBuy].stock_quantity
-                                }
+                        var querySQL = "UPDATE stock_quantity SET ? WHERE ?"
+                        var mode = [{
+                                totalSales: stockRes[i].totalSales - total
+                            },
+                            {
+                                stock_quantity: res[toBuy].stock_quantity
+                            }
 
-                            ],
-                            console.log('Updated Quantity')
-                        )
+                        ];
+                        connection.query(querySQL, mode, function(err, data){
+                            if(err) throw err;
+                            console.log('Hey you Updated: ' + data.affectedRow);
+                        });
                     })
                 } else {
                     console.log("No more in stock")
                 }
                 showProduct()
             })
-        })
-    }
+    })
+}
 
 function showProduct() {
-    inquirer.prompt([{
-        type: 'confirm',
-        name: 'reply',
-        message: 'Would you like another item?',
-    }]).then(function (ans) {
-        if (ans.reply) {
-            start();
-        } else {
-            console.log("Goodbye!")
-        }
-    })
+    // inquirer.prompt([{
+    //     type: 'confirm',
+    //     name: 'reply',
+    //     message: 'Would you like another item?',
+    // }]).then(function (ans) {
+    //     if (ans.reply) {
+    //         start();
+    //     } else {
+    //         console.log("Goodbye!")
+    //     }
+    // })
 }
 start();

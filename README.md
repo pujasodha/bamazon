@@ -1,1 +1,3 @@
 # bamazon
+
+screenshots in folder
