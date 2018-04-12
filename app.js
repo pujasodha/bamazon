@@ -52,8 +52,8 @@ connection.query("Select * FROM Products", function (err , res){
     ])
     .then(function(answer){
         var toBuy = (answer.id)-1
-        var howMany = (parseInt(answer.quantity))
-        var total = parseFloat (((res[toBuy].price)* howMany).toFixed(2))
+        var howMany = (parseInt(answer.stock_quantity))
+        var total = parseFloat(((res[toBuy].price)* howMany).toFixed(2))
 
         if(res[toBuy].stock_quantity >= howMany){
             connection.query('UPDATE products SET ? WHERE ?', [
@@ -63,16 +63,15 @@ connection.query("Select * FROM Products", function (err , res){
                 {
                     item: answer.id
                 }
-            ], function(error, result) {
-                if (error) throw error
-                console.og("Your total is $" + total.toFixed(2) + ". ")
-            })
+            ],
+             console.log("Your total is $" + total.toFixed(2) + ". ")
+            )
 
-            connection.query('SELECT * FROM stock_quantity', function(err, stockres){
+            connection.query('SELECT * FROM stock_quantity', function(err, stockRes){
                 if (err) throw err
                 var index;
-                for(var i = 0; i < stockres.length; i++){
-                    if(stockres[i].stock_quantity === res[toBuy].stock_quantity){
+                for(var i = 0; i < stockRes.length; i++){
+                    if(stockRes[i].stock_quantity === res[toBuy].stock_quantity){
                         index = 1
                     }
                 }
@@ -80,16 +79,14 @@ connection.query("Select * FROM Products", function (err , res){
             
             connection.query("UPDATE stock_quantity SET ? WHERE ?", [
                 {
-                    totalSales: stockres[i].totalSales - total
+                    stock_quantity: stockRes[i].stock_quantity - total
                 },
                 {
                     stock_quantity: res[toBuy].stock_quantity
                 }
-            
-            ], function(err, stockres) {
-                if(err) throw err
+            ], 
                 console.log('Updated Quantity')
-            })
+            )
             })
         } else {
             console.log("No more in stock")
